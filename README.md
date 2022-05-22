@@ -1,1 +1,3 @@
-# A-Review-and-Evaluation-of-Elastic-Distance-Functions-for-Time-Series-Clustering
+# Distance Based Time Series Clustering
+
+Repo to support the paper arxiv.com/xxxxx
