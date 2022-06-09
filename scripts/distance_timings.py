@@ -13,7 +13,7 @@ warnings.filterwarnings(
     'ignore')  # Hide warnings that can generate and clutter notebook
 
 
-def timing_experiment(x, y, distance_callable, distance_params=None, average=30):
+def timing_experiment(x, y, distance_callable, distance_params=None, average=200):
     """Time the average time it takes to take the distance from the first time series
     to all of the other time series in X.
 
@@ -37,7 +37,7 @@ def timing_experiment(x, y, distance_callable, distance_params=None, average=30)
         curr_dist = distance_callable(x, y, **distance_params)
         total_time += time.time() - start
 
-    return total_time / average
+    return total_time
 
 
 def univariate_experiment(start=1000, end=10000, increment=1000):
@@ -55,13 +55,16 @@ def univariate_experiment(start=1000, end=10000, increment=1000):
         x = distance_m_d[0][0]
         y = distance_m_d[1][0]
         numba_sktime = distance_factory(x, y, metric='dtw')
-
+        print(f" length = {i} )")
+        sktime_time = timing_experiment(distance_m_d[0], distance_m_d[1], numba_sktime)
+        print(f" sktime = {sktime_time} )")
         tslearn_time = timing_experiment(x, y, tslearn_dtw)
-        dtw_python_time = timing_experiment(x, y, dtw_python_dtw)
+        print(f" tslearn = {tslearn_time} )")
         rust_dtw_time = timing_experiment(x, y, rust_dtw_dtw,
                                           {'window': i, 'distance_mode': 'euclidean'})
-        sktime_time = timing_experiment(distance_m_d[0], distance_m_d[1], numba_sktime)
-
+        print(f" rust = {rust_dtw_time} )")
+        dtw_python_time = timing_experiment(x, y, dtw_python_dtw)
+        print(f" dtw_python_time = {dtw_python_time} )")
         sktime_timing.append(sktime_time)
         tslearn_timing.append(tslearn_time)
         dtw_python_timing.append(dtw_python_time)
@@ -109,15 +112,15 @@ def multivariate_experiment(start=100, end=500, increment=100):
 
 if __name__ == '__main__':
     uni_df = univariate_experiment(
-        start=100,
-        end=200,
-        increment=100
+        start=7000,
+        end=10000,
+        increment=1000
     )
     uni_df.to_csv('./uni_dist_results', index=False)
 
-    multi_df = multivariate_experiment(
-        start=100,
-        end=200,
-        increment=100
-    )
-    multi_df.to_csv('./multi_dist_results', index=False)
+#    multi_df = multivariate_experiment(
+ #       start=100,
+  #      end=200,
+  #      increment=100
+  #  )
+   # multi_df.to_csv('./multi_dist_results', index=False)
